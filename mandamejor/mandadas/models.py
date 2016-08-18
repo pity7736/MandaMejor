@@ -10,12 +10,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(
         'primer nombre',
         max_length=30,
-        blank=True
+        blank=True,
+        null=True
     )
     last_name = models.CharField(
         'segundo nombre',
         max_length=30,
-        blank=True
+        blank=True,
+        null=True
     )
     email = models.EmailField(
         'email',
