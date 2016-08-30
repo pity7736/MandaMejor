@@ -1,4 +1,4 @@
-from django.test import TestCase
+import unittest
 
 from doublex import Mock, Stub, assert_that, verify
 
@@ -6,7 +6,7 @@ from ..controllers.create_user_controller import CreateUserController
 from ..models import User
 
 
-class CreateUserControllerTests(TestCase):
+class CreateUserControllerTests(unittest.TestCase):
 
     def test_create_user(self):
         user_stub = Stub(User)
@@ -22,7 +22,8 @@ class CreateUserControllerTests(TestCase):
             CreateUserController(
                 email=None,
                 first_name='test first name',
-                last_name='test last name'
+                last_name='test last name',
+                password='123'
             )
         except AssertionError:
             pass
@@ -34,7 +35,8 @@ class CreateUserControllerTests(TestCase):
             CreateUserController(
                 email='test@test.com',
                 first_name=None,
-                last_name='test last name'
+                last_name='test last name',
+                password='123'
             )
         except AssertionError:
             pass
