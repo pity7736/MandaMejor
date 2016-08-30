@@ -2,7 +2,7 @@ from django.test import TestCase
 
 from doublex import Mock, Stub, assert_that, verify
 
-from ..controllers import CreateUserController
+from ..controllers.create_user_controller import CreateUserController
 from ..models import User
 
 
