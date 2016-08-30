@@ -1,57 +1,42 @@
 from django.test import TestCase
 
-from ..controllers import UserController, User
+from doublex import Mock, Stub, assert_that, verify
 
-from doublex import Mock, Stub, ANY_ARG, assert_that, is_, verify
-from hamcrest.core.core.isnone import not_none
+from ..controllers import CreateUserController
+from ..models import User
 
 
-class UserControllerTests(TestCase):
+class CreateUserControllerTests(TestCase):
 
     def test_create_user(self):
-        with Stub(User) as user_stub:
-            user_stub.id = 1
-            user_stub.email = 'test@test.com'
-            user_stub.first_name = 'test first name'
-            user_stub.last_name = 'test last name'
+        user_stub = Stub(User)
 
-        with Mock(UserController) as user_mock:
-            user_mock.create_user(ANY_ARG).returns(user_stub).times(1)
+        with Mock(CreateUserController) as user_mock:
+            user_mock.create_user().returns(user_stub).times(1)
 
-        user = user_mock.create_user(
-            email='test@test.com',
-            first_name='test first name',
-            last_name='test last name'
-        )
-
+        user_mock.create_user()
         assert_that(user_mock, verify())
-        assert_that(user.id, not_none())
-        assert_that(user.email, is_('test@test.com'))
-        assert_that(user.first_name, is_('test first name'))
-        assert_that(user.last_name, is_('test last name'))
 
     def test_create_user_with_email_none(self):
-        with Mock(UserController) as user_mock:
-            user_mock.create_user(ANY_ARG).raises(AssertionError)
-
-        with self.assertRaises(AssertionError):
-            user_mock.create_user(
+        try:
+            CreateUserController(
                 email=None,
                 first_name='test first name',
                 last_name='test last name'
             )
-
-        assert_that(user_mock, verify())
+        except AssertionError:
+            pass
+        else:
+            self.fail('this should fail')
 
     def test_create_user_with_firstname_none(self):
-        with Mock(UserController) as user_mock:
-            user_mock.create_user(ANY_ARG).raises(AssertionError)
-
-        with self.assertRaises(AssertionError):
-            user_mock.create_user(
+        try:
+            CreateUserController(
                 email='test@test.com',
                 first_name=None,
                 last_name='test last name'
             )
-
-        assert_that(user_mock, verify())
+        except AssertionError:
+            pass
+        else:
+            self.fail('this should fail')

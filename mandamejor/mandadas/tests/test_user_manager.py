@@ -23,9 +23,10 @@ class UserManagerTests(TestCase):
                 email=None,
                 password='123'
             )
-            self.fail('This should fail')
         except ValueError:
             pass
+        else:
+            self.fail('This should fail')
 
     def test_create_user_without_password(self):
         User.objects.create_user(
