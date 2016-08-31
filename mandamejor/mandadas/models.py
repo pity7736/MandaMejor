@@ -67,4 +67,4 @@ class Mandada(models.Model):
     paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user
+        return '{0} {1}'.format(self.user.get_full_name(), self.when)
