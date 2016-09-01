@@ -1,3 +1,5 @@
+import datetime
+
 from django.http.response import HttpResponse
 
 from rest_framework import status
@@ -15,25 +17,27 @@ def index(request):
 class MandadasView(APIView):
 
     @staticmethod
-    def get(request):
+    def get(request, init_date=None, end_date=None, user_id=None):
         status_code = status.HTTP_204_NO_CONTENT
-        data = []
-        mandadas = Mandada.objects.all()
-        if mandadas.exists():
-            serializer = MandadaSerializer(mandadas, many=True)
-            status_code = status.HTTP_200_OK
-            data = serializer.data
-        return Response(data, status=status_code)
+        data = {}
+        filter_data = {}
+        error = False
+        if init_date and end_date:
+            try:
+                init_date = datetime.datetime.strptime(init_date, '%Y-%m-%d')
+                end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
+            except ValueError:
+                status_code = status.HTTP_400_BAD_REQUEST
+                error = True
+            else:
+                end_date = end_date + datetime.timedelta(days=1)
+                filter_data['when__range'] = (init_date, end_date)
 
+        if user_id:
+            filter_data['user__id'] = user_id
 
-class MandadasByUserView(APIView):
-
-    @staticmethod
-    def get(request, user_id):
-        status_code = status.HTTP_204_NO_CONTENT
-        mandadas = Mandada.objects.filter(user__id=user_id)
-        data = []
-        if mandadas.exists():
+        mandadas = Mandada.objects.filter(**filter_data)
+        if mandadas.exists() and not error:
             serializer = MandadaSerializer(mandadas, many=True)
             status_code = status.HTTP_200_OK
             data = serializer.data
