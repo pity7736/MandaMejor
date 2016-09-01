@@ -85,3 +85,33 @@ class MandadaViewTests(TestCase):
 
         self.assertEqual(len(response.data), 0)
         self.assertEqual(response.status_code, 204)
+
+    def test_get_mandadas_by_user_email(self):
+        response = self.client.get(
+            '/mandadas/search/user/user1@comparamejor.com/'
+        )
+
+        self.assertEqual(len(response.data), 4)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_mandadas_by_user_id_and_date(self):
+        params = {
+            'user_id': 1,
+            'init_date': '2016-08-28',
+            'end_date': '2016-08-30'
+        }
+        response = self.client.get('/mandadas/search/', params)
+
+        self.assertEqual(len(response.data), 3)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_mandadas_by_user_email_and_date(self):
+        params = {
+            'user_email': 'user1@comparamejor.com',
+            'init_date': '2016-08-28',
+            'end_date': '2016-08-30'
+        }
+        response = self.client.get('/mandadas/search/', params)
+
+        self.assertEqual(len(response.data), 3)
+        self.assertEqual(response.status_code, 200)
