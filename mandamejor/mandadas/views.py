@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Mandada
+from .controllers.mandadas_controller import MandadaController
 from .serializers import MandadaSerializer
 
 
@@ -21,7 +21,6 @@ class MandadasView(APIView):
             user_email=None):
         status_code = status.HTTP_204_NO_CONTENT
         data = {}
-        filter_data = {}
         error = False
         init_date = init_date or request.query_params.get('init_date')
         end_date = end_date or request.query_params.get('end_date')
@@ -32,19 +31,21 @@ class MandadasView(APIView):
             except ValueError:
                 status_code = status.HTTP_400_BAD_REQUEST
                 error = True
+                init_date = None
+                end_date = None
             else:
                 end_date = end_date + datetime.timedelta(days=1)
-                filter_data['when__range'] = (init_date, end_date)
 
         user_id = user_id or request.query_params.get('user_id')
-        if user_id:
-            filter_data['user__id'] = user_id
-
         user_email = user_email or request.query_params.get('user_email')
-        if user_email:
-            filter_data['user__email'] = user_email
 
-        mandadas = Mandada.objects.filter(**filter_data)
+        mandadas_controller = MandadaController(
+            init_date=init_date,
+            end_date=end_date,
+            user_email=user_email,
+            user_id=user_id
+        )
+        mandadas = mandadas_controller.run_query()
         if mandadas.exists() and not error:
             serializer = MandadaSerializer(mandadas, many=True)
             status_code = status.HTTP_200_OK
