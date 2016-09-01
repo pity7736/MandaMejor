@@ -25,14 +25,14 @@ class MandadaViewTests(TestCase):
     def test_get_mandadas(self):
         response = self.client.get('/mandadas/')
 
-        self.assertEqual(len(response.data), 7)
+        self.assertEqual(response.data['count'], 7)
         self.assertEqual(response.status_code, 200)
 
     def test_get_mandadas_no_content(self):
         Mandada.objects.all().delete()
         response = self.client.get('/mandadas/')
 
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.data['count'], 0)
         self.assertEqual(response.status_code, 204)
 
     def test_search_mandadas_by_date_range(self):
@@ -40,7 +40,7 @@ class MandadaViewTests(TestCase):
             '/mandadas/search/date/2016-08-28/2016-08-30/'
         )
 
-        self.assertEqual(len(response.data), 4)
+        self.assertEqual(response.data['count'], 4)
         self.assertEqual(response.status_code, 200)
 
     def test_search_mandadas_by_data_same_date(self):
@@ -49,7 +49,7 @@ class MandadaViewTests(TestCase):
             '/mandadas/search/date/2016-08-28/2016-08-28/'
         )
 
-        self.assertEqual(len(response.data), 2)
+        self.assertEqual(response.data['count'], 2)
         self.assertEqual(response.status_code, 200)
 
     def test_search_mandadas_by_date_without_other_date(self):
@@ -74,16 +74,16 @@ class MandadaViewTests(TestCase):
     def test_get_mandadas_by_user_id(self):
         response = self.client.get('/mandadas/search/user/1/')
 
-        self.assertEqual(len(response.data), 4)
-        self.assertEqual(response.data[0]['user'], 1)
-        self.assertEqual(response.data[1]['user'], 1)
-        self.assertEqual(response.data[2]['user'], 1)
+        self.assertEqual(response.data['count'], 4)
+        self.assertEqual(response.data['data'][0]['user'], 1)
+        self.assertEqual(response.data['data'][1]['user'], 1)
+        self.assertEqual(response.data['data'][2]['user'], 1)
         self.assertEqual(response.status_code, 200)
 
     def test_get_mandadas_by_nonexistent_user(self):
         response = self.client.get('/mandadas/search/user/10/')
 
-        self.assertEqual(len(response.data), 0)
+        self.assertEqual(response.data['count'], 0)
         self.assertEqual(response.status_code, 204)
 
     def test_get_mandadas_by_user_email(self):
@@ -91,7 +91,7 @@ class MandadaViewTests(TestCase):
             '/mandadas/search/user/user1@comparamejor.com/'
         )
 
-        self.assertEqual(len(response.data), 4)
+        self.assertEqual(response.data['count'], 4)
         self.assertEqual(response.status_code, 200)
 
     def test_get_mandadas_by_user_id_and_date(self):
@@ -102,7 +102,7 @@ class MandadaViewTests(TestCase):
         }
         response = self.client.get('/mandadas/search/', params)
 
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(response.data['count'], 3)
         self.assertEqual(response.status_code, 200)
 
     def test_get_mandadas_by_user_email_and_date(self):
@@ -113,5 +113,5 @@ class MandadaViewTests(TestCase):
         }
         response = self.client.get('/mandadas/search/', params)
 
-        self.assertEqual(len(response.data), 3)
+        self.assertEqual(response.data['count'], 3)
         self.assertEqual(response.status_code, 200)

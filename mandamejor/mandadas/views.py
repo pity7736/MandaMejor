@@ -48,5 +48,7 @@ class MandadasView(APIView):
         if mandadas.exists() and not error:
             serializer = MandadaSerializer(mandadas, many=True)
             status_code = status.HTTP_200_OK
-            data = serializer.data
+            data['data'] = serializer.data
+
+        data['count'] = mandadas.count()
         return Response(data, status=status_code)
